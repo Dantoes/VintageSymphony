@@ -65,4 +65,12 @@ public static class MoreMath
 		float deltaZ = vector1.Z - vector2.Z;
 		return (float)System.Math.Sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
 	}
+	
+	public static float ExponentialSmoothing(float oldValue, float newValue, float smoothingStrength, float deltaTimeS)
+	{
+		smoothingStrength = GameMath.Clamp(smoothingStrength, 0.0f, 1.0f);
+		float alpha = (float)(1f - Math.Exp(-smoothingStrength * deltaTimeS));
+		float smoothedValue = oldValue + alpha * (newValue - oldValue);
+		return smoothedValue;
+	}
 }

@@ -2,6 +2,7 @@ using Vintagestory.API.MathTools;
 using VintageSymphony.Situations.Evaluator;
 using VintageSymphony.Situations.Facts;
 using VintageSymphony.Storage;
+using VintageSymphony.Util;
 
 namespace VintageSymphony.Situations;
 
@@ -58,19 +59,21 @@ public class SituationBlackboard
 		{
 			if (evaluators.TryGetValue(assessment.Situation, out var evaluator))
 			{
-				assessment.Certainty = GameMath.Clamp(evaluator.Evaluate(assessment.Situation, facts), 0f, 1f);
+				var newCertainty = GameMath.Clamp(evaluator.Evaluate(assessment.Situation, facts), 0f, 1f);
+				assessment.Certainty = ExponentialSmoothing(assessment, dt, assessment.Certainty, newCertainty);
 			}
 		}
 		blackboard.Sort(blackboardComparator);
 	}
 
-	public float GetSituationCertainty(Situation situation)
+	private static float ExponentialSmoothing(SituationAssessment assessment, float dt, float oldCertainty, float newCertainty)
 	{
-		if (assessmentsBySituation.TryGetValue(situation, out var assessment))
+		if ((newCertainty > oldCertainty && assessment.SmoothIncreasingCertainty) 
+		    || (newCertainty < oldCertainty && assessment.SmoothDecreasingCertainty))
 		{
-			return assessment.Certainty;
+			return MoreMath.ExponentialSmoothing(oldCertainty, newCertainty, 0.3f, dt);
 		}
 
-		return 0f;
+		return newCertainty;
 	}
 }

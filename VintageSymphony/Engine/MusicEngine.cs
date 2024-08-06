@@ -48,9 +48,9 @@ public class MusicEngine : BaseModSystem
 
 	private static readonly float[][] PauseDurations =
 	{
-		new float[2] { 960f, 480f },
-		new float[2] { 420f, 240f },
-		new float[2] { 180f, 120f },
+		new [] { 960f, 480f },
+		new [] { 420f, 240f },
+		new [] { 180f, 120f },
 		new float[2]
 	};
 
@@ -128,6 +128,7 @@ public class MusicEngine : BaseModSystem
 		var track = musicCurator.FindBestMatchingTrack();
 		if (track != null)
 		{
+			StopTrack();
 			PlayTrack(track);
 		}
 	}

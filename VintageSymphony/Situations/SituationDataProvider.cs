@@ -34,4 +34,14 @@ public static class SituationDataProvider
     {
         return SituationData[situation].BreaksJustStartedTracks;
     }
+    
+    public static bool GetSmoothIncreasingCertainty(Situation situation)
+    {
+        return SituationData[situation].SmoothIncreasingCertainty;
+    }
+        
+    public static bool GetSmoothDecreasingCertainty(Situation situation)
+    {
+        return SituationData[situation].SmoothDecreasingCertainty;
+    }
 }
