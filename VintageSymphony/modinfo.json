@@ -1,0 +1,12 @@
+{
+  "type": "code",
+  "modid": "vintage-symphony",
+  "name": "Vintage Symphony",
+  "author": "Haviland",
+  "description": "A situation-aware music engine",
+  "version": "1.0.0",
+  "dependency": {
+    "game": ""
+  }
+}
+  
