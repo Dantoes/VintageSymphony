@@ -205,7 +205,7 @@ public class SituationalFactsCollector
 
 		facts.EnemyDistance = enemyEntity == null
 			? float.PositiveInfinity
-			: MoreMath.DistanceWithWeightedVerticality(enemyEntity.Pos.XYZFloat, PlayerEntity.Pos.XYZFloat, 4f);
+			: MoreMath.DistanceWithWeightedVerticality(enemyEntity.Pos.XYZFloat, PlayerEntity.Pos.XYZFloat, 3f);
 	}
 
 	private void UpdateSunLevel()

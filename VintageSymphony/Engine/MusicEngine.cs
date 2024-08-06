@@ -181,7 +181,7 @@ public class MusicEngine : BaseModSystem
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	private bool IsPlayingTrack()
 	{
-		return CurrentMusicTrack == null;
+		return CurrentMusicTrack != null;
 	}
 
 	public void PlayTrack(MusicTrack track)

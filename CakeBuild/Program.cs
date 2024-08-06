@@ -140,11 +140,14 @@ public sealed class PackageTask : FrostingTask<BuildContext>
 
 		var musicAssetsPath = $"{buildDir}/assets/{context.Name}/music/";
 		context.EnsureDirectoryExists(musicAssetsPath);
+		var releasePath = $"{Program.SolutionDirectory}/Releases";
+		context.EnsureDirectoryExists(releasePath);
+		
 		context.CopyFiles($"{Program.SolutionDirectory}/Assets/music/*.ogg", musicAssetsPath);
 		context.CopyFiles($"{Program.SolutionDirectory}/Assets/music/musicconfig.json", musicAssetsPath);
 		context.CopyFile($"{projectDir}/modinfo.json", $"{buildDir}/modinfo.json");
 
-		context.Zip(buildDir, $"../Releases/{context.Name}_{context.Version}.zip");
+		context.Zip(buildDir, $"{releasePath}/{context.Name}_{context.Version}.zip");
 		context.DeleteDirectory(buildDir, new DeleteDirectorySettings { Recursive = true });
 	}
 }

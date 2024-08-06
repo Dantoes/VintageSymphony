@@ -116,6 +116,7 @@ public class MusicCurator
 
 		UpdateScoredTracks(highestAssessments);
 		return allScoredTracks
+			.Where(t => t.Score > 0f)
 			.Where(t => !trackCooldownManager.IsOnCooldown(t.Track))
 			.Where(t => trackRestrictionMatcher.IsWithinConfiguredRestrictions(t.Track, playerProperties,
 				climateCondition, playerPosition))

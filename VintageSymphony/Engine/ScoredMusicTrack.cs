@@ -10,4 +10,9 @@ public class ScoredMusicTrack
 		Track = track;
 		Score = score;
 	}
+
+	public override string ToString()
+	{
+		return $"[{Score}] {Track}";
+	}
 }
