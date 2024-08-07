@@ -34,7 +34,7 @@ public class ConsoleCommandSystem : ModSystem
 
 	private TextCommandResult ToggleDebugOverlay(TextCommandCallingArgs args)
 	{
-		var debugOverlay = MusicManager.DebugOverlay;
+		var debugOverlay = VintageSymphony.DebugOverlay;
 		if (debugOverlay.IsOpened())
 		{
 			debugOverlay.TryClose();
@@ -48,13 +48,13 @@ public class ConsoleCommandSystem : ModSystem
 
 	private TextCommandResult StopTrack(TextCommandCallingArgs args)
 	{
-		MusicManager.MusicEngine?.StopTrackAndPause();
+		VintageSymphony.MusicEngine?.StopTrackAndPause();
 		return TextCommandResult.Success();
 	}
 
 	private TextCommandResult OutputCurrentTrack(TextCommandCallingArgs args)
 	{
-		var track = MusicManager.MusicEngine?.CurrentMusicTrack;
+		var track = VintageSymphony.MusicEngine?.CurrentMusicTrack;
 		if (track == null)
 		{
 			return TextCommandResult.Success("&gt; no track playing");
@@ -65,7 +65,7 @@ public class ConsoleCommandSystem : ModSystem
 
 	private TextCommandResult NextTrack(TextCommandCallingArgs args)
 	{
-		MusicManager.MusicEngine?.NextTrack();
+		VintageSymphony.MusicEngine?.NextTrack();
 		return TextCommandResult.Success();
 	}
 }

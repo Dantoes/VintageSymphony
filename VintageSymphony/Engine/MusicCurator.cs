@@ -110,7 +110,7 @@ public class MusicCurator
 
 	private IEnumerable<ScoredMusicTrack> FindBestMatchingTracks(IList<SituationAssessment> highestAssessments)
 	{
-		var playerProperties = MusicManager.ClientMain.playerProperties;
+		var playerProperties = VintageSymphony.ClientMain.playerProperties;
 		var playerPosition = clientApi.World.Player.Entity.Pos.AsBlockPos;
 		var climateCondition = clientApi.World.BlockAccessor.GetClimateAt(playerPosition);
 

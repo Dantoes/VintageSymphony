@@ -40,7 +40,7 @@ public class MusicEngine : BaseModSystem
 	private const int DisableTrackCooldownThresholdMs = 30 * 1000;
 
 	public SituationBlackboard SituationBlackboard => situationBlackboard;
-	private TrackedPlayerProperties PlayerProperties => MusicManager.ClientMain.playerProperties;
+	private TrackedPlayerProperties PlayerProperties => VintageSymphony.ClientMain.playerProperties;
 	private ILogger Logger => clientApi.Logger;
 	public MusicTrack? CurrentMusicTrack { get; private set; }
 	private MusicCurator musicCurator = null!;
@@ -72,7 +72,7 @@ public class MusicEngine : BaseModSystem
 
 	protected override void OnGameStarted()
 	{
-		situationBlackboard = new SituationBlackboard(MusicManager.Instance.AttributeStorage);
+		situationBlackboard = new SituationBlackboard(VintageSymphony.Instance.AttributeStorage);
 		trackCooldownManager = new TrackCooldownManager(() => clientApi.ElapsedMilliseconds);
 		musicCurator = new MusicCurator(clientApi, situationBlackboard, trackCooldownManager);
 

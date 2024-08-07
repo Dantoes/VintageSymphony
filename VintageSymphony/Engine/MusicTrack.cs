@@ -41,7 +41,7 @@ public class MusicTrack : SurfaceMusicTrack
 	[JsonProperty]
 	public float Volume = 1f;
 
-	private float GlobalVolume => MusicManager.Configuration.GlobalVolume;
+	private float GlobalVolume => VintageSymphony.Configuration.GlobalVolume;
 	private bool volumeSet = false;
 
 	public Situation[] TrackSituations = Array.Empty<Situation>();

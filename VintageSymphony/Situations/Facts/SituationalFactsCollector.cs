@@ -40,7 +40,7 @@ public class SituationalFactsCollector
 
 	public SituationalFactsCollector(AttributeStorage attributeStorage)
 	{
-		clientApi = MusicManager.ClientApi;
+		clientApi = VintageSymphony.ClientApi;
 		this.attributeStorage = attributeStorage;
 		PlayerEntity.WatchedAttributes.RegisterModifiedListener("onHurt", OnPlayerHurt);
 		clientApi.Event.BlockChanged += OnBlockChanged;
@@ -210,7 +210,7 @@ public class SituationalFactsCollector
 
 	private void UpdateSunLevel()
 	{
-		facts.SunLevel = MusicManager.ClientMain.playerProperties.sunSlight;
+		facts.SunLevel = VintageSymphony.ClientMain.playerProperties.sunSlight;
 	}
 
 	private static bool IsBedBlock(Block? block)

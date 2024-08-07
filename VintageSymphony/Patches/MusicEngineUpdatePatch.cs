@@ -14,7 +14,7 @@ public class MusicEngineUpdatePatch
     static bool Prefix(float dt, 
         IMusicTrack[] ___shuffledTracks)
     {
-        MusicManager.MusicEngine?.LoadTracks(___shuffledTracks);
+        VintageSymphony.MusicEngine?.LoadTracks(___shuffledTracks);
         return false; 
     }
 }

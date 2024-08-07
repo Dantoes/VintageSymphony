@@ -18,11 +18,11 @@ namespace VintageSymphony;
 // TODO: Todos
 
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
-public class MusicManager : BaseModSystem
+public class VintageSymphony : BaseModSystem
 {
 	private const string PersistentStoragePrefix = "mm_";
 
-	public static MusicManager Instance { get; private set; }
+	public static VintageSymphony Instance { get; private set; }
 	public static ICoreClientAPI ClientApi { get; private set; }
 	public static ClientMain ClientMain { get; private set; }
 	public static MusicEngine MusicEngine { get; private set; }

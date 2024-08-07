@@ -9,7 +9,7 @@ public class TemporalStormEvaluator : IEvaluator
 
 	public TemporalStormEvaluator()
 	{
-		temporalStabilitySystem = MusicManager.ClientApi.ModLoader.GetModSystem<SystemTemporalStability>();
+		temporalStabilitySystem = VintageSymphony.ClientApi.ModLoader.GetModSystem<SystemTemporalStability>();
 	}
 
 	public bool IsEvaluatingSituation(Situation situation)
