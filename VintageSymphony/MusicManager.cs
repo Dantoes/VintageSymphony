@@ -85,7 +85,7 @@ public class MusicManager : BaseModSystem
 	public override void Dispose()
 	{
 		AttributeStorage.Dispose();
-		DebugOverlay.Dispose();
+		DebugOverlay?.Dispose();
 		base.Dispose();
 	}
 }
