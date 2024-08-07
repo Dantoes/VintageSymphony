@@ -86,6 +86,8 @@ public class MusicEngine : BaseModSystem
 			_ => trackCooldownManager.CleanupRoutine(), TrackCooldownCleanupIntervalMs, TrackCooldownCleanupIntervalMs);
 		situationUpdateEventId =
 			clientApi.World.RegisterGameTickListener(UpdateSituation, SituationUpdateIntervalMs + 20);
+		
+		SetupPause();
 	}
 
 	private void OnMusicLevelChanged(int volume)
