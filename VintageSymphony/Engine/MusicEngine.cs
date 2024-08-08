@@ -249,7 +249,7 @@ public class MusicEngine : BaseModSystem
 			return;
 		}
 
-		var filter = new TrackFilter();
+		var filter = new TrackFilter(VintageSymphony.Configuration, Mod.Info.ModID);
 		musicCurator.Tracks = allTracks
 			.Where(filter.KeepTrack)
 			.Select(t => t as MusicTrack ?? new MusicTrackWrapper(t))

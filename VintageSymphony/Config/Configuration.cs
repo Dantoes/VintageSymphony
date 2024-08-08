@@ -6,4 +6,7 @@ namespace VintageSymphony.Config;
 public class Configuration
 {
     public float GlobalVolume = 1f;
+    public bool LoadGameMusic = false;
+    public bool LoadVintageSymphonyMusic = true;
+    public bool LoadCaveTrack = true;
 }
