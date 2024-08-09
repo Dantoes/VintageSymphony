@@ -7,7 +7,9 @@ namespace VintageSymphony.Engine;
 
 public sealed class MusicTrackWrapper : MusicTrack
 {
+	private static readonly GameTrackSituationLibrary SituationLibrary = new ();
 	private IMusicTrack wrappedTrack;
+	private AssetLocation DefaultAssetLocation => AssetLocation.Create("undefined");
 
 	public MusicTrackWrapper(IMusicTrack wrappedTrack)
 	{
@@ -15,16 +17,16 @@ public sealed class MusicTrackWrapper : MusicTrack
 
 		if (wrappedTrack is SurfaceMusicTrack wrappedSurfaceTrack)
 		{
-			Location = wrappedSurfaceTrack.Location ?? AssetLocation.Create("undefined");
+			Location = wrappedSurfaceTrack.Location ?? DefaultAssetLocation;
+			Situation = SituationLibrary.GetSituationString(wrappedTrack);
 			Priority = wrappedSurfaceTrack.Priority;
 			StartPriority = wrappedSurfaceTrack.StartPriority;
-			Situation = Situations.Situation.Calm.ToString();
 		}
 
 		if (wrappedTrack is CaveMusicTrack)
 		{
-			Location = AssetLocation.Create("undefined");
-			Situation = Situations.Situation.Cave.ToString();
+			Location = DefaultAssetLocation;
+			Situation = SituationLibrary.GetSituationString(wrappedTrack);
 			DisableCooldown = true;
 			MinSunlight = 0;
 		}
