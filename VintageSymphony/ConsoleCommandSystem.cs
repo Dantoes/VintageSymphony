@@ -29,7 +29,27 @@ public class ConsoleCommandSystem : ModSystem
 			.BeginSubCommand("debug")
 			.WithDescription("Toggle debug overlay")
 			.HandleWith(ToggleDebugOverlay)
+			.EndSubCommand()
+			// --
+			.BeginSubCommand("config")
+			.WithDescription("Toggle Vintage Symphony configuration")
+			.HandleWith(ToggleConfigurationDialog)
 			.EndSubCommand();
+	}
+
+	private TextCommandResult ToggleConfigurationDialog(TextCommandCallingArgs args)
+	{
+		var configurationDialog = VintageSymphony.ConfigurationDialog;
+		if (configurationDialog.IsOpened())
+		{
+			configurationDialog.TryClose();
+		}
+		else
+		{
+			configurationDialog.TryOpen();
+		}
+
+		return TextCommandResult.Success();
 	}
 
 	private TextCommandResult ToggleDebugOverlay(TextCommandCallingArgs args)
@@ -43,6 +63,7 @@ public class ConsoleCommandSystem : ModSystem
 		{
 			debugOverlay.TryOpen();
 		}
+
 		return TextCommandResult.Success();
 	}
 

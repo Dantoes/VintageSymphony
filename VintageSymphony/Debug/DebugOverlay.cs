@@ -7,6 +7,7 @@ namespace VintageSymphony.Debug;
 #nullable disable
 public class DebugOverlay : HudElement
 {
+	private const string DebugOverlayTextKey = "vsdbg_text";
 	private readonly MusicEngine musicEngine;
 	private GuiComposer debugTextComposer;
 	private GuiElementDynamicText textElement;
@@ -25,9 +26,9 @@ public class DebugOverlay : HudElement
 			.CreateCompo("debugScreenText",
 				ElementBounds.Percentual(EnumDialogArea.RightTop, 0.5, 0.7).WithFixedAlignmentOffset(-5.0, 5.0))
 			.AddDynamicText("", CairoFont.WhiteSmallishText().WithOrientation(EnumTextOrientation.Right),
-				ElementBounds.Fill, "debugScreenTextElem").OnlyDynamic()
+				ElementBounds.Fill, DebugOverlayTextKey).OnlyDynamic()
 			.Compose();
-		textElement = debugTextComposer.GetDynamicText("debugScreenTextElem");
+		textElement = debugTextComposer.GetDynamicText(DebugOverlayTextKey);
 	}
 
 	public override void OnFinalizeFrame(float dt)
@@ -36,6 +37,7 @@ public class DebugOverlay : HudElement
 		{
 			UpdateText(dt);
 		}
+
 		debugTextComposer.PostRender(dt);
 	}
 
@@ -48,7 +50,7 @@ public class DebugOverlay : HudElement
 	{
 		var playerPosition = VintageSymphony.ClientApi.World.Player.Entity.Pos.AsBlockPos;
 		var climateCondition = VintageSymphony.ClientApi.World.BlockAccessor.GetClimateAt(playerPosition);
-		
+
 		var facts = musicEngine.SituationBlackboard.SituationalFacts;
 
 		sb.Clear();
@@ -62,7 +64,8 @@ public class DebugOverlay : HudElement
 		sb.Append(nameof(facts.RelativeHeight)).Append(": ").AppendLine(facts.RelativeHeight.ToString("0.##"));
 		sb.Append(nameof(facts.DistanceToSurface)).Append(": ").AppendLine(facts.DistanceToSurface.ToString("0.##"));
 		sb.Append(nameof(facts.EnemyDistance)).Append(": ").AppendLine(facts.EnemyDistance.ToString("0.##"));
-		sb.Append(nameof(facts.SecondsSinceLastDamage)).Append(": ").AppendLine(facts.SecondsSinceLastDamage.ToString("0.##"));
+		sb.Append(nameof(facts.SecondsSinceLastDamage)).Append(": ")
+			.AppendLine(facts.SecondsSinceLastDamage.ToString("0.##"));
 		sb.Append(nameof(facts.IsHoldingWeapon)).Append(": ").AppendLine(facts.IsHoldingWeapon.ToString());
 		sb.Append(nameof(facts.SunLevel)).Append(": ").AppendLine(facts.SunLevel.ToString("0"));
 		sb.Append("Temperature: ").AppendLine(climateCondition.Temperature.ToString("0.##"));
@@ -72,7 +75,7 @@ public class DebugOverlay : HudElement
 			sb.Append(assessment.Situation).Append(": ")
 				.AppendLine(assessment.Certainty.ToString("0.##"));
 		}
-		
+
 		sb.AppendLine("---");
 		var track = VintageSymphony.MusicEngine.CurrentMusicTrack;
 		if (track != null)
@@ -87,8 +90,8 @@ public class DebugOverlay : HudElement
 		{
 			sb.Append("Pause (").Append(VintageSymphony.MusicEngine.GetRemainingPauseDurationS()).AppendLine("s)");
 		}
-		
-		
+
+
 		textElement.SetNewTextAsync(sb.ToString());
 	}
 }

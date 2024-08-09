@@ -28,10 +28,12 @@ public class VintageSymphony : BaseModSystem
 	public static MusicEngine MusicEngine { get; private set; }
 	public static DebugOverlay DebugOverlay { get; private set; }
 	public static Configuration Configuration { get; private set; }
+	public static ConfigurationDialog ConfigurationDialog { get; private set; }
 
 	private string ModId => Mod.Info.ModID;
 	public AttributeStorage AttributeStorage { get; private set; }
 	private string modDataPath;
+	private ConfigurationLoader configurationLoader;
 
 
 	public override double ExecuteOrder() => 1.5;
@@ -46,10 +48,10 @@ public class VintageSymphony : BaseModSystem
 		ClientMain = (ClientMain)api.World;
 		MusicEngine = ClientApi.ModLoader.GetModSystem<MusicEngine>();
 
-		var configLoader = new ConfigurationLoader(ClientApi, ModId);
+		configurationLoader = new ConfigurationLoader(ClientApi, ModId);
 		try
 		{
-			Configuration = configLoader.LoadConfiguration();
+			Configuration = configurationLoader.LoadConfiguration();
 		}
 		catch (ConfigurationException)
 		{
@@ -76,6 +78,14 @@ public class VintageSymphony : BaseModSystem
 
 	protected override void OnGameStarted()
 	{
+		ConfigurationDialog = new ConfigurationDialog(ClientApi, Configuration, configurationLoader);
+		if (!Configuration.InitialConfigurationShown)
+		{
+			Configuration.InitialConfigurationShown = true;
+			configurationLoader.SaveConfiguration(Configuration);
+			ConfigurationDialog.TryOpen(true);
+		}
+		
 		DebugOverlay = new DebugOverlay(ClientApi, MusicEngine);
 #if DEBUG
 		DebugOverlay.TryOpen();
@@ -85,7 +95,7 @@ public class VintageSymphony : BaseModSystem
 	public override void Dispose()
 	{
 		AttributeStorage.Dispose();
-		DebugOverlay?.Dispose();
+		DebugOverlay.Dispose();
 		base.Dispose();
 	}
 }
