@@ -5,7 +5,7 @@ namespace VintageSymphony;
 
 public abstract class BaseModSystem : ModSystem
 {
-    private ICoreClientAPI? clientApi;
+    protected ICoreClientAPI? clientApi;
     protected bool IsGameStarted { get; private set; }
 
     public override void StartClientSide(ICoreClientAPI api)
