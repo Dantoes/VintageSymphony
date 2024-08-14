@@ -10,7 +10,7 @@ public enum Situation
 	[SituationData(2.0f, breaksPause: true, breaksJustStartedTracks: true, smoothIncreasingCertainty: false)]
 	Fight,
 
-	[SituationData(1.5f, breaksPause: true, breaksJustStartedTracks: true, smoothIncreasingCertainty: false)]
+	[SituationData(1.5f, breaksPause: true, breaksJustStartedTracks: true)]
 	Danger,
 
 	[SituationData(1.4f, breaksPause: true)]
@@ -18,6 +18,8 @@ public enum Situation
 
 	[SituationData(weight: 1.2f)]
 	Adventure,
+	
+	[SituationData(weight: 0.9f)]
 	Idle,
 	Calm,
 }

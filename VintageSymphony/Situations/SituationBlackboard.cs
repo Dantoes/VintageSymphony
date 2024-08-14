@@ -71,7 +71,7 @@ public class SituationBlackboard
 		if ((newCertainty > oldCertainty && assessment.SmoothIncreasingCertainty) 
 		    || (newCertainty < oldCertainty && assessment.SmoothDecreasingCertainty))
 		{
-			return MoreMath.ExponentialSmoothing(oldCertainty, newCertainty, 0.3f, dt);
+			return MoreMath.ExponentialSmoothing(oldCertainty, newCertainty, 0.1f, dt);
 		}
 
 		return newCertainty;
