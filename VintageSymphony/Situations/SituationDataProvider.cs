@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using VintageSymphony.Situations.Evaluator;
 
 namespace VintageSymphony.Situations;
@@ -20,28 +21,9 @@ public static class SituationDataProvider
         return fieldInfo?.GetCustomAttribute<SituationDataAttribute>() ?? new SituationDataAttribute();
     }
 
-    public static float GetPriorityValue(Situation situation)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static SituationDataAttribute GetAttributes(Situation situation)
     {
-        return SituationData[situation].Priority;
-    }
-    
-    public static bool GetBreaksPause(Situation situation)
-    {
-        return SituationData[situation].BreaksPause;
-    }
-    
-    public static bool GetBreaksJustStartedTracks(Situation situation)
-    {
-        return SituationData[situation].BreaksJustStartedTracks;
-    }
-    
-    public static bool GetSmoothIncreasingCertainty(Situation situation)
-    {
-        return SituationData[situation].SmoothIncreasingCertainty;
-    }
-        
-    public static bool GetSmoothDecreasingCertainty(Situation situation)
-    {
-        return SituationData[situation].SmoothDecreasingCertainty;
+        return SituationData[situation];
     }
 }

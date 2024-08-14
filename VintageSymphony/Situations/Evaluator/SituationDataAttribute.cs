@@ -1,7 +1,7 @@
 namespace VintageSymphony.Situations.Evaluator;
 
 [AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
-internal sealed class SituationDataAttribute : Attribute
+public sealed class SituationDataAttribute : Attribute
 {
 	public float Priority { get; }
 	public float Weight { get; }

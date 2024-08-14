@@ -70,9 +70,9 @@ public class MusicTrack : SurfaceMusicTrack
 		StartPriorityRnd = NatFloat.createGauss(1f, 0.2f);
 		if (TrackSituations.Length > 0)
 		{
-			SituationPriority = TrackSituations.Max(SituationDataProvider.GetPriorityValue);
-			BreaksPause = TrackSituations.Any(SituationDataProvider.GetBreaksPause);
-			BreaksJustStartedTracks = TrackSituations.Any(SituationDataProvider.GetBreaksJustStartedTracks);			
+			SituationPriority = TrackSituations.Max(s => SituationDataProvider.GetAttributes(s).Priority);
+			BreaksPause = TrackSituations.Any(s => SituationDataProvider.GetAttributes(s).BreaksPause);
+			BreaksJustStartedTracks = TrackSituations.Any(s => SituationDataProvider.GetAttributes(s).BreaksJustStartedTracks);			
 		}
 	}
 

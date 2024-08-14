@@ -64,9 +64,9 @@ public class MusicCurator
 		}
 
 		var highestPrioritizedTrackSituation = track.TrackSituations
-			.Max(SituationDataProvider.GetPriorityValue);
+			.Max(s => SituationDataProvider.GetAttributes(s).Priority);
 		var highestSituationAssessment = highestAssessments
-			.Max(a => SituationDataProvider.GetPriorityValue(a.Situation));
+			.Max(a => SituationDataProvider.GetAttributes(a.Situation).Priority);
 
 		return highestPrioritizedTrackSituation < highestSituationAssessment;
 	}
@@ -87,7 +87,7 @@ public class MusicCurator
 	public MusicTrack? GetReplacementTrackForPause()
 	{
 		var highestAssessments = GetHighestAssessments();
-		if (highestAssessments.Any(a => SituationDataProvider.GetBreaksPause(a.Situation)))
+		if (highestAssessments.Any(a => SituationDataProvider.GetAttributes(a.Situation).BreaksPause))
 		{
 			return FindBestMatchingTracks(highestAssessments)
 				.Select(st => st.Track)

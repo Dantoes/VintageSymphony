@@ -14,10 +14,11 @@ public class SituationAssessment
 
     public SituationAssessment(Situation situation, float certainty)
     {
+        var situationData = SituationDataProvider.GetAttributes(situation);
         Situation = situation;
         Certainty = certainty;
-        priority = SituationDataProvider.GetPriorityValue(Situation);
-        SmoothIncreasingCertainty = SituationDataProvider.GetSmoothIncreasingCertainty(situation);
-        SmoothDecreasingCertainty = SituationDataProvider.GetSmoothDecreasingCertainty(situation);
+        priority = situationData.Priority;
+        SmoothIncreasingCertainty = situationData.SmoothIncreasingCertainty;
+        SmoothDecreasingCertainty = situationData.SmoothDecreasingCertainty;
     }
 }
