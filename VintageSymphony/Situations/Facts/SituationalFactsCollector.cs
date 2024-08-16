@@ -70,7 +70,7 @@ public class SituationalFactsCollector
 	}
 
 
-	public SituationalFacts AssessSituation(float dt)
+	public SituationalFacts GatherFacts(float dt)
 	{
 		UpdateMovementDistances();
 		UpdateMovementRadius();

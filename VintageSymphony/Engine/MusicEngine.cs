@@ -17,9 +17,8 @@ public class MusicEngine : BaseModSystem
 	private ICoreClientAPI clientApi = null!;
 	private Func<long> currentTimeMs => () => clientApi.ElapsedMilliseconds;
 	private int musicFrequency;
-	private long pauseStartTime;
-	private long pauseDuration;
-	private long trackStartTime;
+	public readonly Pause Pause;
+	public readonly Pause ForcedPause;
 
 	private long playbackUpdateEventId;
 	private const int PlaybackUpdateIntervalMs = 1 * 1000;
@@ -27,7 +26,7 @@ public class MusicEngine : BaseModSystem
 
 	private long songReplacementUpdateEventId;
 	private const int SongReplacementUpdateIntervalMs = 1 * 1000;
-	private const int MinPlaybackTimeForSongReplacementMs = 10 * 1000;
+	private const int MinPlaybackTimeForSongReplacementMs = 8 * 1000;
 
 	private const int TrackCooldownCleanupIntervalMs = 2 * 60 * 1000;
 	private TrackCooldownManager trackCooldownManager = null!;
@@ -44,15 +43,23 @@ public class MusicEngine : BaseModSystem
 	private ILogger Logger => clientApi.Logger;
 	public MusicTrack? CurrentMusicTrack { get; private set; }
 	private MusicCurator musicCurator = null!;
-	private long TrackPlayTimeMs => currentTimeMs() - trackStartTime;
+	private long TrackPlayTimeMs => (long)((CurrentMusicTrack?.Sound?.PlaybackPosition ?? 9999f) * 1000L);
 
 	private static readonly float[][] PauseDurations =
 	{
-		new [] { 960f, 480f },
-		new [] { 420f, 240f },
-		new [] { 180f, 120f },
+		new[] { 960f, 480f },
+		new[] { 420f, 240f },
+		new[] { 180f, 120f },
 		new float[2]
 	};
+
+
+	public MusicEngine()
+	{
+		Pause = new Pause(currentTimeMs);
+		ForcedPause = new Pause(currentTimeMs);
+	}
+
 
 	public override void StartClientSide(ICoreClientAPI api)
 	{
@@ -63,9 +70,9 @@ public class MusicEngine : BaseModSystem
 		clientApi.Settings.Int.AddWatcher("musicFrequency", newValue =>
 		{
 			musicFrequency = newValue;
-			if (IsPausing())
+			if (Pause.Active)
 			{
-				UpdatePauseDuration();
+				Pause.UpdateDuration(GetPauseDuration());
 			}
 		});
 	}
@@ -86,8 +93,9 @@ public class MusicEngine : BaseModSystem
 			_ => trackCooldownManager.CleanupRoutine(), TrackCooldownCleanupIntervalMs, TrackCooldownCleanupIntervalMs);
 		situationUpdateEventId =
 			clientApi.World.RegisterGameTickListener(UpdateSituation, SituationUpdateIntervalMs + 20);
-		
-		SetupPause();
+
+		Pause.Start(GetPauseDuration());
+		ForcedPause.Start(15 * 1000L);
 	}
 
 	private void OnMusicLevelChanged(int volume)
@@ -148,11 +156,17 @@ public class MusicEngine : BaseModSystem
 
 		if (!IsPlayingTrack())
 		{
-			if (replacementTrack.BreaksPause)
+			if (ForcedPause.Active && !replacementTrack.BreaksForcedPause)
 			{
-				PlayTrack(replacementTrack);
-				CurrentMusicTrack = replacementTrack;
+				return;
 			}
+
+			if (Pause.Active && !replacementTrack.BreaksPause)
+			{
+				return;
+			}
+
+			PlayTrack(replacementTrack);
 		}
 		else
 		{
@@ -162,21 +176,26 @@ public class MusicEngine : BaseModSystem
 			}
 
 			// Handle the case when there is a current track playing
-			bool ignoreMinPlayTime = CurrentMusicTrack!.BreaksJustStartedTracks ||
-			                         TrackPlayTimeMs > MinPlaybackTimeForSongReplacementMs;
-
-			if (ignoreMinPlayTime)
+			var minPlaybackTimeReached = TrackPlayTimeMs > MinPlaybackTimeForSongReplacementMs;
+			bool ignoreMinPlayTime = CurrentMusicTrack!.BreaksJustStartedTracks || minPlaybackTimeReached;
+			if (!ignoreMinPlayTime)
 			{
-				if (CurrentMusicTrack.BreaksPause && !replacementTrack.BreaksPause)
+				return;
+			}
+
+
+			if ((CurrentMusicTrack.PauseAfterPlayback && !replacementTrack.BreaksPause)
+			    || (CurrentMusicTrack.ForcedPauseAfterPlayback && !replacementTrack.BreaksForcedPause))
+			{
+				if (minPlaybackTimeReached)
 				{
-					StopTrack(5);
-					SetupPause();
+					StopTrackAndPause(5);
 				}
-				else
-				{
-					StopTrack(5);
-					PlayTrack(replacementTrack);
-				}
+			}
+			else
+			{
+				StopTrack(5);
+				PlayTrack(replacementTrack);
 			}
 		}
 	}
@@ -191,7 +210,6 @@ public class MusicEngine : BaseModSystem
 	{
 		CurrentMusicTrack = track;
 		CurrentMusicTrack.BeginPlay(PlayerProperties);
-		trackStartTime = currentTimeMs();
 		if (!track.DisableCooldown)
 		{
 			trackCooldownManager.PutOnCooldown(CurrentMusicTrack);
@@ -208,21 +226,30 @@ public class MusicEngine : BaseModSystem
 		}
 
 		Logger.Debug($"Stopping track: {CurrentMusicTrack!.Name}");
-		CurrentMusicTrack.FadeOut(fadeOutTimeS);
+		if (CurrentMusicTrack.IsPlaying)
+		{
+			CurrentMusicTrack.FadeOut(fadeOutTimeS);
+		}
+
 		CurrentMusicTrack = null;
 	}
 
 	public void StopTrackAndPause(float fadeOutTimeS = 2f)
 	{
+		var playingTrack = CurrentMusicTrack;
 		StopTrack(fadeOutTimeS);
-		SetupPause();
+		if (playingTrack != null)
+		{
+			SetupPauseAfterTrack(playingTrack);
+		}
 	}
 
 
 	public void NextTrack()
 	{
 		StopTrack(0.5f);
-		UpdatePauseDuration(0);
+		Pause.Stop();
+		ForcedPause.Stop();
 	}
 
 	private void MonitorCurrentTrack()
@@ -237,8 +264,7 @@ public class MusicEngine : BaseModSystem
 
 		if (!CurrentMusicTrack.IsPlaying)
 		{
-			CurrentMusicTrack = null;
-			SetupPause();
+			StopTrackAndPause();
 		}
 	}
 
@@ -268,43 +294,32 @@ public class MusicEngine : BaseModSystem
 		situationBlackboard.Update(dt);
 	}
 
-	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private bool IsPausing()
+	private void SetupPauseAfterTrack(MusicTrack track)
 	{
-		return currentTimeMs() < pauseStartTime + pauseDuration;
+		if (track.PauseAfterPlayback)
+		{
+			Pause.Start(GetPauseDuration());
+		}
+		if (track.ForcedPauseAfterPlayback)
+		{
+			ForcedPause.Start(8000L);
+		}
 	}
 
-	private void SetupPause()
-	{
-		pauseStartTime = currentTimeMs();
-		UpdatePauseDuration();
-		Logger.Debug($"Pausing music for {pauseDuration / 1000L}s");
-	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private void UpdatePauseDuration()
+	private long GetPauseDuration()
 	{
 		int frequencySetting = Math.Clamp(musicFrequency, 0, 3);
 		float baseDuration = PauseDurations[frequencySetting][0];
 		float variance = PauseDurations[frequencySetting][1];
 		float duration = baseDuration - (Random.Shared.NextSingle() * 2 - 1) * variance;
-		UpdatePauseDuration((long)duration * 1000L);
-	}
-
-	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private void UpdatePauseDuration(long duration)
-	{
-		pauseDuration = duration;
+		return (long)duration * 1000L;
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	private bool ShouldPlaySong()
 	{
-		return !CurrentMusicTrack?.IsPlaying ?? !IsPausing();
-	}
-
-	public int GetRemainingPauseDurationS()
-	{
-		return (int)((pauseStartTime + pauseDuration - currentTimeMs()) / 1000L);
+		return !CurrentMusicTrack?.IsPlaying ?? !Pause.Active && !ForcedPause.Active;
 	}
 }

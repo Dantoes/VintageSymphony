@@ -14,7 +14,7 @@ public class DangerEvaluator : IEvaluator
 	{
 		// TODO: add temporal stablility
 
-		float enemies = MoreMath.ClampMap(facts.EnemyDistance, 5, 30, 1, 0);
+		float enemies = MoreMath.ClampMap(facts.EnemyDistance, 10, 40, 1, 0);
 		float holdingWeapon = facts.IsHoldingWeapon ? 1f : 0f;
 		float damage = MoreMath.ClampMap(facts.SecondsSinceLastDamage, 0, 60, 1, 0);
 		float damageWeight = damage >= 0.5f && facts.EnemyDistance < 15 ? 3f : 0.2f;

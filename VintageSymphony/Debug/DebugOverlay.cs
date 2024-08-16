@@ -77,7 +77,7 @@ public class DebugOverlay : HudElement
 		}
 
 		sb.AppendLine("---");
-		var track = VintageSymphony.MusicEngine.CurrentMusicTrack;
+		var track = musicEngine.CurrentMusicTrack;
 		if (track != null)
 		{
 			sb.Append(nameof(track)).Append(": ")
@@ -88,7 +88,18 @@ public class DebugOverlay : HudElement
 		}
 		else
 		{
-			sb.Append("Pause (").Append(VintageSymphony.MusicEngine.GetRemainingPauseDurationS()).AppendLine("s)");
+			int duration = 0;
+			if (musicEngine.ForcedPause.Active)
+			{
+				duration = musicEngine.ForcedPause.GetRemainingTimeS();
+				sb.Append("Forced ");
+			}
+			else if (musicEngine.Pause.Active)
+			{
+				duration = musicEngine.Pause.GetRemainingTimeS();
+			}
+
+			sb.Append("Pause (").Append(duration).AppendLine("s)");
 		}
 
 

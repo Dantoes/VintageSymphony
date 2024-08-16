@@ -55,7 +55,11 @@ public class MusicTrack : SurfaceMusicTrack
 	
 	// track replacement options
 	public bool BreaksPause { get; protected set; }
+	public bool BreaksForcedPause { get; protected set; }
 	public bool BreaksJustStartedTracks { get; protected set; }
+	public bool PauseAfterPlayback { get; protected set; }
+	public bool ForcedPauseAfterPlayback { get; protected set; }
+
 
 
 	public override void Initialize(IAssetManager assetManager, ICoreClientAPI capi, IMusicEngine musicEngine)
@@ -72,7 +76,10 @@ public class MusicTrack : SurfaceMusicTrack
 		{
 			SituationPriority = TrackSituations.Max(s => SituationDataProvider.GetAttributes(s).Priority);
 			BreaksPause = TrackSituations.Any(s => SituationDataProvider.GetAttributes(s).BreaksPause);
-			BreaksJustStartedTracks = TrackSituations.Any(s => SituationDataProvider.GetAttributes(s).BreaksJustStartedTracks);			
+			BreaksForcedPause = TrackSituations.Any(s => SituationDataProvider.GetAttributes(s).BreaksForcedPause);
+			BreaksJustStartedTracks = TrackSituations.Any(s => SituationDataProvider.GetAttributes(s).BreaksJustStartedTracks);
+			PauseAfterPlayback = TrackSituations.Any(s => SituationDataProvider.GetAttributes(s).PauseAfterPlayback);
+			ForcedPauseAfterPlayback = TrackSituations.Any(s => SituationDataProvider.GetAttributes(s).ForcedPauseAfterPlayback);
 		}
 	}
 
