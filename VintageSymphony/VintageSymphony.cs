@@ -16,8 +16,7 @@ namespace VintageSymphony;
 // TODO: test compatibility with existing mods
 // TODO: allow mods to interact / extend?
 // TODO: take rifts into account: reduce calm
-// TODO: increase song cooldown
-// TODO: apply situation aversion by situation assessments, in blackboard, not per track score
+// TODO: take line of sight to enemies into account (danger, fight) 
 // TODO: Todos
 
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]

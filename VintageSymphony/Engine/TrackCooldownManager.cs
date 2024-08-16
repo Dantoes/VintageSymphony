@@ -14,7 +14,7 @@ public class TrackCooldownManager
 		}
 	}
 
-	private const long TrackCooldownMs = 25L * 60L * 1000L;
+	private const long TrackCooldownMs = 30L * 60L * 1000L;
 	private const long TrackCooldownVarianceMs = 4L * 60L * 1000L;
 	private readonly List<TrackCooldown> tracksOnCooldown = new();
 	private readonly Func<long> currentTimeMs;
