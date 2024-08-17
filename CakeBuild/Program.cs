@@ -48,8 +48,10 @@ public class BuildContext : FrostingContext
 {
 	public const string ProjectName = "VintageSymphony";
 	public string BuildConfiguration { get; set; }
-	public string Version { get; }
-	public string Name { get; }
+	public string ModVersion { get; }
+	public string ModName { get; }
+	public string ModAssetsVersion { get; }
+	public string ModAssetsName { get; }
 	public bool SkipJsonValidation { get; set; }
 
 	public BuildContext(ICakeContext context)
@@ -57,11 +59,16 @@ public class BuildContext : FrostingContext
 	{
 		BuildConfiguration = context.Argument("configuration", "Release");
 		SkipJsonValidation = context.Argument("skipJsonValidation", false);
-		var modInfo =
-			context.DeserializeJsonFromFile<ModInfo>(Path.Combine(Program.SolutionDirectory, ProjectName,
-				"modinfo.json"));
-		Version = modInfo.Version;
-		Name = modInfo.ModID;
+		
+		var modInfoPath = Path.Combine(Program.SolutionDirectory, ProjectName, "modinfo.json");
+		var modInfo = context.DeserializeJsonFromFile<ModInfo>(modInfoPath);
+		ModVersion = modInfo.Version;
+		ModName = modInfo.ModID;
+		
+		var modAssetsInfoPath = Path.Combine(Program.SolutionDirectory, "Assets", "modinfo.json");
+		var modAssetsInfo = context.DeserializeJsonFromFile<ModInfo>(modAssetsInfoPath);
+		ModAssetsVersion = modAssetsInfo.Version;
+		ModAssetsName = modAssetsInfo.ModID;
 	}
 }
 
@@ -116,44 +123,65 @@ public sealed class BuildTask : FrostingTask<BuildContext>
 	}
 }
 
-[TaskName("Package")]
+[TaskName("PackageMod")]
 [IsDependentOn(typeof(BuildTask))]
-public sealed class PackageTask : FrostingTask<BuildContext>
+public sealed class PackageModTask : FrostingTask<BuildContext>
 {
 	public override void Run(BuildContext context)
 	{
 		var projectDir = Path.Combine(Program.SolutionDirectory, BuildContext.ProjectName);
-		var projectFile = Path.Combine(projectDir, $"{BuildContext.ProjectName}.csproj");
+		
+		var releasePath = $"{Program.SolutionDirectory}/Releases";
+		context.EnsureDirectoryExists(releasePath);		
 
 		context.EnsureDirectoryExists("../Releases");
 		context.CleanDirectory("../Releases");
-		var buildDir = $"../Releases/{context.Name}";
+		
+		var modBuildDir = $"../Releases/{context.ModName}";
+		PackageModArchive(context, modBuildDir, projectDir, releasePath);
 
+		var assetsBuildDir = $"../Releases/{context.ModAssetsName}";
+		PackageModAssetsArchive(context, assetsBuildDir, releasePath);
+
+
+		context.DeleteDirectory(modBuildDir, new DeleteDirectorySettings { Recursive = true });
+	}
+
+	private static void PackageModAssetsArchive(BuildContext context, string assetsBuildDir, string releasePath)
+	{
+		var musicAssetsPath = $"{assetsBuildDir}/assets/{context.ModName}/music/";
+		context.EnsureDirectoryExists(musicAssetsPath);
+		
+		context.CopyFiles($"{Program.SolutionDirectory}/Assets/music/*.ogg", musicAssetsPath);
+		context.CopyFiles($"{Program.SolutionDirectory}/Assets/music/musicconfig.json", musicAssetsPath);
+		context.CopyFile($"{Program.SolutionDirectory}/Assets/modinfo.json", $"{assetsBuildDir}/modinfo.json");
+		context.Zip(assetsBuildDir, $"{releasePath}/{context.ModAssetsName}_{context.ModAssetsVersion}.zip");
+	}
+
+	private static void PackageModArchive(BuildContext context, string buildDir, string projectDir, string releasePath)
+	{
+		// Copy mod DLL
 		context.EnsureDirectoryExists(buildDir);
 		context.CopyFiles($"{projectDir}/bin/{context.BuildConfiguration}/{BuildContext.ProjectName}.dll", buildDir);
-
+		
+		// Copy mod debug symbols
 		if (context.BuildConfiguration == "Debug")
 		{
 			context.CopyFiles($"{projectDir}/bin/{context.BuildConfiguration}/{BuildContext.ProjectName}.pdb",
 				buildDir);
 		}
-
-		var musicAssetsPath = $"{buildDir}/assets/{context.Name}/music/";
-		context.EnsureDirectoryExists(musicAssetsPath);
-		var releasePath = $"{Program.SolutionDirectory}/Releases";
-		context.EnsureDirectoryExists(releasePath);
 		
-		context.CopyFiles($"{Program.SolutionDirectory}/Assets/music/*.ogg", musicAssetsPath);
-		context.CopyFiles($"{Program.SolutionDirectory}/Assets/music/musicconfig.json", musicAssetsPath);
+		// copy modinfo.json
 		context.CopyFile($"{projectDir}/modinfo.json", $"{buildDir}/modinfo.json");
-
-		context.Zip(buildDir, $"{releasePath}/{context.Name}_{context.Version}.zip");
-		context.DeleteDirectory(buildDir, new DeleteDirectorySettings { Recursive = true });
+		
+		// package mod
+		context.Zip(buildDir, $"{releasePath}/{context.ModName}_{context.ModVersion}.zip");
 	}
 }
 
+
 [TaskName("Default")]
-[IsDependentOn(typeof(PackageTask))]
+[IsDependentOn(typeof(PackageModTask))]
 public class DefaultTask : FrostingTask
 {
 }

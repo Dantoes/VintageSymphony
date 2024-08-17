@@ -1,13 +1,13 @@
 using Vintagestory.API.Client;
 
-namespace VintageSymphony.UpdateNotifier;
+namespace VintageSymphony.Update;
 
 #nullable disable
 public class AvailableUpdateOverlay : HudElement
 {
 	private GuiComposer debugTextComposer;
 	private GuiElementDynamicText textElement;
-	private string text = "Vintage Symphony update available";
+	private string text = "Vintage Symphony assets have been updated. Please reload your save-game to apply…";
 
 	public AvailableUpdateOverlay(ICoreClientAPI api)
 		: base(api)
@@ -34,11 +34,5 @@ public class AvailableUpdateOverlay : HudElement
 	public override void OnRenderGUI(float deltaTime)
 	{
 		debugTextComposer.Render(deltaTime);
-	}
-
-	public void SetVersion(Version currentVersion, Version newVersion)
-	{
-		text = $"Vintage Symphony update available: {newVersion} (current: {currentVersion})";
-		textElement.SetNewTextAsync(text);
 	}
 }
