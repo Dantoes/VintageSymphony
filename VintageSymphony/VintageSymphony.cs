@@ -15,8 +15,8 @@ namespace VintageSymphony;
 
 // TODO: test compatibility with existing mods
 // TODO: allow mods to interact / extend?
-// TODO: take rifts into account: reduce calm
 // TODO: take line of sight to enemies into account (danger, fight) 
+// TODO: increase track random variance
 // TODO: Todos
 
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]

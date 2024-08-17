@@ -2,6 +2,7 @@ using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.MathTools;
+using Vintagestory.GameContent;
 using VintageSymphony.Storage;
 using VintageSymphony.Util;
 
@@ -37,6 +38,7 @@ public class SituationalFactsCollector
 	private long timeLastDamageTaken = -1L;
 	private readonly int worldHeight;
 	private readonly int seaLevel;
+	private readonly ModSystemRifts riftModSystem;
 
 	public SituationalFactsCollector(AttributeStorage attributeStorage)
 	{
@@ -46,6 +48,7 @@ public class SituationalFactsCollector
 		clientApi.Event.BlockChanged += OnBlockChanged;
 		worldHeight = clientApi.World.BlockAccessor.MapSize.Y;
 		seaLevel = clientApi.World.SeaLevel;
+		riftModSystem = clientApi.ModLoader.GetModSystem<ModSystemRifts>();
 	}
 
 	private long GetNow() => clientApi.InWorldEllapsedMilliseconds;
@@ -79,6 +82,7 @@ public class SituationalFactsCollector
 		UpdateHeight();
 		UpdateHoldingWeapon();
 		UpdateEnemyDistance();
+		UpdateRiftDistance();
 		UpdateSunLevel();
 
 		return facts;
@@ -152,7 +156,7 @@ public class SituationalFactsCollector
 			nearestDistanceSq = long.Min(nearestDistanceSq, playerPosition.SquareDistanceTo(homeLocations[i]));
 		}
 
-		facts.DistanceFromHome = (float)Math.Sqrt(nearestDistanceSq);
+		facts.DistanceFromHome = MathF.Sqrt(nearestDistanceSq);
 	}
 
 	private void UpdateTime()
@@ -206,6 +210,16 @@ public class SituationalFactsCollector
 		facts.EnemyDistance = enemyEntity == null
 			? float.PositiveInfinity
 			: MoreMath.DistanceWithWeightedVerticality(enemyEntity.Pos.XYZFloat, PlayerEntity.Pos.XYZFloat, 3f);
+	}
+
+	private void UpdateRiftDistance()
+	{
+		Vec3d playerPos = PlayerEntity.Pos.XYZ;
+		float sqrDistance = riftModSystem.nearestRifts?
+			.Select(r => (float?)playerPos.SquareDistanceTo(r.Position))
+			.DefaultIfEmpty()
+			.Min() ?? float.PositiveInfinity;
+		facts.RiftDistance = MathF.Sqrt(sqrDistance);
 	}
 
 	private void UpdateSunLevel()

@@ -16,8 +16,9 @@ public struct SituationalFacts
 	public float RelativeHeight;
 	public float DistanceToSurface;
 	public bool IsHoldingWeapon;
-	public float EnemyDistance = EnemyDistanceMax + 1;
+	public float EnemyDistance = float.PositiveInfinity;
 	public const float EnemyDistanceMax = 50f;
+	public float RiftDistance = float.PositiveInfinity;
 	public float SunLevel;
 	public const float SunLevelMax = 32f;
 }

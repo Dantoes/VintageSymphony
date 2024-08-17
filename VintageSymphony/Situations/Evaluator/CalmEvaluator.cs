@@ -12,16 +12,15 @@ public class CalmEvaluator : IEvaluator
 
 	public float Evaluate(Situation situation, SituationalFacts facts)
 	{
-		float movement = MoreMath.ClampMap(facts.MovementRadius, 0, 100, 1, 0);
-		float enemies = MoreMath.ClampMap(facts.EnemyDistance, 0, SituationalFacts.EnemyDistanceMax, 0, 1);
+		float enemies = MoreMath.ClampMap(facts.EnemyDistance, 10, SituationalFacts.EnemyDistanceMax, 1, 0);
+		float rifts = MoreMath.ClampMap(facts.RiftDistance, 0, 50, 1, 0);
 		float holdingWeapon = facts.IsHoldingWeapon ? 1f : 0f;
-		float damage = MoreMath.ClampMap(facts.SecondsSinceLastDamage, 0, 60, 0, 1);
+		float damage = MoreMath.ClampMap(facts.SecondsSinceLastDamage, 0, 60, 1, 0);
 
-		return MoreMath.WeightedAverage(
-			new Tuple<float, float>(movement, 0.5f),
-			new Tuple<float, float>(enemies, 1.2f),
-			new Tuple<float, float>(holdingWeapon, 0.7f),
-			new Tuple<float, float>(damage, 2f)
-		);
+		return 1f
+		       - enemies
+		       - rifts * .5f
+		       - holdingWeapon * .15f
+		       - damage * .3f;
 	}
 }

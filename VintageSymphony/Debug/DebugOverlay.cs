@@ -64,6 +64,7 @@ public class DebugOverlay : HudElement
 		sb.Append(nameof(facts.RelativeHeight)).Append(": ").AppendLine(facts.RelativeHeight.ToString("0.##"));
 		sb.Append(nameof(facts.DistanceToSurface)).Append(": ").AppendLine(facts.DistanceToSurface.ToString("0.##"));
 		sb.Append(nameof(facts.EnemyDistance)).Append(": ").AppendLine(facts.EnemyDistance.ToString("0.##"));
+		sb.Append(nameof(facts.RiftDistance)).Append(": ").AppendLine(facts.RiftDistance.ToString("0.##"));
 		sb.Append(nameof(facts.SecondsSinceLastDamage)).Append(": ")
 			.AppendLine(facts.SecondsSinceLastDamage.ToString("0.##"));
 		sb.Append(nameof(facts.IsHoldingWeapon)).Append(": ").AppendLine(facts.IsHoldingWeapon.ToString());

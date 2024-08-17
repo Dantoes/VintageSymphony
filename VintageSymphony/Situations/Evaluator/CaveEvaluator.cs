@@ -14,6 +14,7 @@ public class CaveEvaluator : IEvaluator
 	{
 		float underground = MoreMath.ClampMap(facts.DistanceToSurface, 0, 10, 0, 1);
 		float sunLevel = MoreMath.ClampMap(facts.SunLevel, 3, 10, 1, 0);
-		return underground * sunLevel;
+		float homeProximity = MoreMath.ClampMap(facts.DistanceFromHome, 20, 50, 1, 0);
+		return underground * sunLevel - homeProximity;
 	}
 }
