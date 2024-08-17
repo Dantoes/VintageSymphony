@@ -71,7 +71,7 @@ public class MusicTrack : SurfaceMusicTrack
 	protected virtual void InternalInitialize()
 	{
 		TrackSituations = ParseTrackSituations(Situation);
-		StartPriorityRnd = NatFloat.createGauss(1f, 0.2f);
+		StartPriorityRnd = NatFloat.createGauss(1f, 0.3f);
 		if (TrackSituations.Length > 0)
 		{
 			SituationPriority = TrackSituations.Max(s => SituationDataProvider.GetAttributes(s).Priority);
