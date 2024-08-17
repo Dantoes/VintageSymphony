@@ -3,13 +3,13 @@ using Vintagestory.API.Client;
 namespace VintageSymphony.Update;
 
 #nullable disable
-public class AvailableUpdateOverlay : HudElement
+public class UpdateInstalledOverlay : HudElement
 {
 	private GuiComposer debugTextComposer;
 	private GuiElementDynamicText textElement;
-	private string text = "Vintage Symphony assets have been updated. Please reload your save-game to apply…";
+	private string text = "Vintage Symphony assets updated. Reload your save-game to apply changes.";
 
-	public AvailableUpdateOverlay(ICoreClientAPI api)
+	public UpdateInstalledOverlay(ICoreClientAPI api)
 		: base(api)
 	{
 		SetupDialog();

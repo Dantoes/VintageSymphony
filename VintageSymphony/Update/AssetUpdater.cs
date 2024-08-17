@@ -11,7 +11,7 @@ public class AssetUpdater : BaseModSystem
 	private readonly GitHubReleaseFetcher releaseFetcher = new();
 	private Task<Release?>? releaseFetcherTask;
 	private Task? upgradeTask;
-	private AvailableUpdateOverlay? updateOverlay;
+	private UpdateInstalledOverlay? updateOverlay;
 
 	public override bool ShouldLoad(EnumAppSide forSide) => forSide == EnumAppSide.Client;
 	private long releaseFetcherListener;
@@ -24,7 +24,7 @@ public class AssetUpdater : BaseModSystem
 
 		releaseFetcherListener = clientApi!.World.RegisterGameTickListener(FetchLatestRelease, 1000, 2000);
 		releaseFetcherTask = releaseFetcher.GetLatestReleaseAsync(ApiUrl);
-		updateOverlay = new AvailableUpdateOverlay(clientApi);
+		updateOverlay = new UpdateInstalledOverlay(clientApi);
 	}
 
 	private void FetchLatestRelease(float dt)
