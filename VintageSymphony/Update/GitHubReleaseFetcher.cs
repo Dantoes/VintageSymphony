@@ -44,15 +44,11 @@ public class GitHubReleaseFetcher
 			return null;
 		}
 
-
 		try
 		{
-			return new Release
-			{
-				Version = new Version(tagName),
-				DownloadUrl = assets[0]["browser_download_url"]!.ToString(),
-				FileName = assets[0]["name"]!.ToString(),
-			};
+			return new Release(new Version(tagName),
+				assets[0]["browser_download_url"]!.ToString(),
+				assets[0]["name"]!.ToString());
 		}
 		catch
 		{

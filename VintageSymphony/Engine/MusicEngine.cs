@@ -14,8 +14,7 @@ public class MusicEngine : BaseModSystem
 	public override bool ShouldLoad(EnumAppSide forSide) => forSide == EnumAppSide.Client;
 	public override double ExecuteOrder() => 1.6;
 
-	private ICoreClientAPI clientApi = null!;
-	private Func<long> currentTimeMs => () => clientApi.ElapsedMilliseconds;
+	private Func<long> CurrentTimeMs => () => clientApi!.ElapsedMilliseconds;
 	private int musicFrequency;
 	public readonly Pause Pause;
 	public readonly Pause ForcedPause;
@@ -40,7 +39,7 @@ public class MusicEngine : BaseModSystem
 
 	public SituationBlackboard SituationBlackboard => situationBlackboard;
 	private TrackedPlayerProperties PlayerProperties => VintageSymphony.ClientMain.playerProperties;
-	private ILogger Logger => clientApi.Logger;
+	private ILogger Logger => clientApi!.Logger;
 	public MusicTrack? CurrentMusicTrack { get; private set; }
 	private MusicCurator musicCurator = null!;
 	private long TrackPlayTimeMs => (long)((CurrentMusicTrack?.Sound?.PlaybackPosition ?? 9999f) * 1000L);
@@ -56,8 +55,8 @@ public class MusicEngine : BaseModSystem
 
 	public MusicEngine()
 	{
-		Pause = new Pause(currentTimeMs);
-		ForcedPause = new Pause(currentTimeMs);
+		Pause = new Pause(CurrentTimeMs);
+		ForcedPause = new Pause(CurrentTimeMs);
 	}
 
 
@@ -80,13 +79,13 @@ public class MusicEngine : BaseModSystem
 	protected override void OnGameStarted()
 	{
 		situationBlackboard = new SituationBlackboard(VintageSymphony.Instance.AttributeStorage);
-		trackCooldownManager = new TrackCooldownManager(() => clientApi.ElapsedMilliseconds);
-		musicCurator = new MusicCurator(clientApi, situationBlackboard, trackCooldownManager);
+		trackCooldownManager = new TrackCooldownManager(() => clientApi!.ElapsedMilliseconds);
+		musicCurator = new MusicCurator(clientApi!, situationBlackboard, trackCooldownManager);
 
 		ClientSettings.Inst.AddWatcher<int>("musicLevel", OnMusicLevelChanged);
 
 		playbackUpdateEventId =
-			clientApi.World.RegisterGameTickListener(UpdatePlayback, PlaybackUpdateIntervalMs, PlaybackUpdateDelayMs);
+			clientApi!.World.RegisterGameTickListener(UpdatePlayback, PlaybackUpdateIntervalMs, PlaybackUpdateDelayMs);
 		songReplacementUpdateEventId = clientApi.World.RegisterGameTickListener(ConsiderTrackReplacement,
 			SongReplacementUpdateIntervalMs, SongReplacementUpdateIntervalMs + 80);
 		trackCooldownCleanupEventId = clientApi.World.RegisterGameTickListener(
@@ -109,7 +108,7 @@ public class MusicEngine : BaseModSystem
 		{
 			if (eventId != 0L)
 			{
-				clientApi.World.UnregisterGameTickListener(eventId);
+				clientApi!.World.UnregisterGameTickListener(eventId);
 			}
 		}
 

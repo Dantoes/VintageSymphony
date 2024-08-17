@@ -11,7 +11,7 @@ public class AssetUpdater : BaseModSystem
 	private readonly GitHubReleaseFetcher releaseFetcher = new();
 	private Task<Release?>? releaseFetcherTask;
 	private Task? upgradeTask;
-	private AvailableUpdateOverlay updateOverlay;
+	private AvailableUpdateOverlay? updateOverlay;
 
 	public override bool ShouldLoad(EnumAppSide forSide) => forSide == EnumAppSide.Client;
 	private long releaseFetcherListener;
@@ -66,7 +66,7 @@ public class AssetUpdater : BaseModSystem
 		}
 		clientApi!.World.UnregisterGameTickListener(upgradeListener);
 
-		updateOverlay.TryOpen();
+		updateOverlay!.TryOpen();
 		showOverlayListener = clientApi!.World.RegisterGameTickListener(CloseUpdateOverlay, 1000, 60000);
 	}
 
@@ -127,6 +127,6 @@ public class AssetUpdater : BaseModSystem
 	private void CloseUpdateOverlay(float obj)
 	{
 		clientApi!.World.UnregisterGameTickListener(showOverlayListener);
-		updateOverlay.TryClose();
+		updateOverlay!.TryClose();
 	}
 }
