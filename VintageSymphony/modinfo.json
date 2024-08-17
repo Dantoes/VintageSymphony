@@ -4,9 +4,9 @@
   "name": "Vintage Symphony",
   "author": "Haviland",
   "description": "A situation-aware music engine replacement",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "dependency": {
-    "game": ""
+    "game": "*"
   },
   "requiredOnServer": false
 }
