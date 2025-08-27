@@ -40,6 +40,10 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="Sprache" Version="2.3.1" />
+    </ItemGroup>
+
+    <ItemGroup>
         <Content Include="assets\**">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
