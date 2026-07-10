@@ -1,5 +1,3 @@
-using System.Reflection;
-using System.Runtime.Versioning;
 using Cake.Common;
 using Cake.Common.IO;
 using Cake.Common.Tools.DotNet;
@@ -55,7 +53,7 @@ public class BuildContext : FrostingContext
 	public string ModAssetsVersion { get; }
 	public string ModAssetsName { get; }
 	public bool SkipJsonValidation { get; set; }
-	public string TargetFramework { get; set; }
+	public const string TargetFramework = "net10.0";
 
 
 	public BuildContext(ICakeContext context)
@@ -63,7 +61,6 @@ public class BuildContext : FrostingContext
 	{
 		BuildConfiguration = context.Argument("configuration", "Release");
 		SkipJsonValidation = context.Argument("skipJsonValidation", false);
-		TargetFramework = context.Argument("framework", DetectTargetFramework());
 
 		var modInfoPath = Path.Combine(Program.SolutionDirectory, ProjectName, "modinfo.json");
 		var modInfo = context.DeserializeJsonFromFile<ModInfo>(modInfoPath);
@@ -74,60 +71,6 @@ public class BuildContext : FrostingContext
 		var modAssetsInfo = context.DeserializeJsonFromFile<ModInfo>(modAssetsInfoPath);
 		ModAssetsVersion = modAssetsInfo.Version;
 		ModAssetsName = modAssetsInfo.ModID;
-	}
-	
-	public string AdjustVersionForFilename(string version)
-	{
-		if (TargetFramework == "net7.0")
-		{
-			return version + "-vs120";
-		}
-		return version;
-	}
-	
-	private string DetectTargetFramework()
-	{
-		try
-		{
-			// Get the Vintage Story API path from environment variable
-			var vsPath = Environment.GetEnvironmentVariable("VINTAGE_STORY");
-			if (string.IsNullOrEmpty(vsPath))
-			{
-				Console.WriteLine("VINTAGE_STORY environment variable not set. Defaulting to net8.0");
-				return "net8.0";
-			}
-            
-			// Path to the main API DLL
-			var apiDllPath = Path.Combine(vsPath, "VintagestoryAPI.dll");
-			if (!File.Exists(apiDllPath))
-			{
-				Console.WriteLine($"VintagestoryAPI.dll not found at {apiDllPath}. Defaulting to net8.0");
-				return "net8.0";
-			}
-            
-			// Load the assembly and check its target framework
-			var assembly = Assembly.LoadFile(apiDllPath);
-			var targetFrameworkAttribute = assembly.GetCustomAttribute<TargetFrameworkAttribute>();
-            
-			if (targetFrameworkAttribute != null)
-			{
-				var frameworkName = targetFrameworkAttribute.FrameworkName;
-				Console.WriteLine($"Detected framework: {frameworkName}");
-                
-				if (frameworkName.Contains(".NETCoreApp,Version=v7."))
-					return "net7.0";
-				else if (frameworkName.Contains(".NETCoreApp,Version=v8."))
-					return "net8.0";
-			}
-            
-			// Fallback to checking assembly references for .NET version indicators
-			return "net8.0"; // Default to the latest if can't determine
-		}
-		catch (Exception ex)
-		{
-			Console.WriteLine($"Error detecting framework: {ex.Message}");
-			return "net8.0"; // Default to the latest if detection fails
-		}
 	}
 
 }
@@ -179,7 +122,7 @@ public sealed class BuildTask : FrostingTask<BuildContext>
 			new DotNetPublishSettings
 			{
 				Configuration = context.BuildConfiguration,
-				Framework = context.TargetFramework
+				Framework = BuildContext.TargetFramework
 			});
 	}
 }
@@ -240,7 +183,7 @@ public sealed class PackageModTask : FrostingTask<BuildContext>
 		context.CopyFile($"{projectDir}/compatibility.json", $"{buildDir}/assets/vintagesymphony/config/compatibility.json");
 
 		// package mod
-		context.Zip(buildDir, $"{releasePath}/{context.ModName}_{context.AdjustVersionForFilename(context.ModVersion)}.zip");
+		context.Zip(buildDir, $"{releasePath}/{context.ModName}_{context.ModVersion}.zip");
 	}
 }
 

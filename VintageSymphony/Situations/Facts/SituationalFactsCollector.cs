@@ -291,7 +291,7 @@ public class SituationalFactsCollector
 			entityToPlayerVec.Y = 0; // Ignore height difference for direction check
 			entityToPlayerVec = entityToPlayerVec.Normalize();
 
-			var entityMovementVec = entity.ServerPos.Motion.Clone();
+			var entityMovementVec = entity.Pos.Motion.Clone();
 			entityMovementVec.Y = 0; // Ignore vertical motion
 
 			var movingTowardPlayer = false;
@@ -408,6 +408,6 @@ public class SituationalFactsCollector
 		return isEnemy;
 	}
 
-	static BlockSelection raytraceIntersectionBlock = new();
-	static EntitySelection raytraceIntersectionEntity = new();
+	static BlockSelection? raytraceIntersectionBlock = new();
+	static EntitySelection? raytraceIntersectionEntity = new();
 }
